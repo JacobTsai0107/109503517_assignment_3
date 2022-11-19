@@ -8,6 +8,7 @@
 #define COLUMN 9
 #define true 1
 #define false 0
+#define MAXSTACK 200
 
 FILE *fp;
 
@@ -302,6 +303,9 @@ void replay(void)
 int writefile()
 { // binary file write in
     char filename[50];
+    NODE *tmp;
+    NODE *cur;
+    cur = stack;
     printf("name for saving file(binary file as '.dat'):");
     scanf("%s", filename);
     if (!(fp = fopen(filename, "wb")))
@@ -310,7 +314,10 @@ int writefile()
     }
     else
     {
-        fwrite(stack, sizeof(NODE), counter, fp);
+        while(cur->next!=NULL){
+            fwrite(cur, sizeof(NODE), 1, fp);
+            cur = cur->next;
+        }
         fclose(fp);
         return 1;
     }
@@ -318,6 +325,8 @@ int writefile()
 int readfile()
 { // read file
     char filename[50];
+    NODE *tmp=NULL;
+    NODE *cur=NULL;
     printf("name for saving file(binary file as '.dat'):");
     scanf("%s", filename);
     if (!(fp = fopen(filename, "rb")))
@@ -326,7 +335,14 @@ int readfile()
     }
     else
     {
-        fread(stack, sizeof(NODE), counter, fp);
+        fread(stack, sizeof(NODE), 1, fp);
+        tmp = stack;
+        while(tmp->next!=NULL){
+            tmp = tmp->next;
+            fread(tmp, sizeof(NODE), 1, fp);
+            head = tmp;
+            
+        }
         fclose(fp);
         return 1;
     }
